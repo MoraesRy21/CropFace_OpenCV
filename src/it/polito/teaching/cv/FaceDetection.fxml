@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.CheckBox?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="it.polito.teaching.cv.FaceDetectionController">
+    <top>
+        <VBox>
+           <children>
+               <HBox alignment="CENTER" spacing="10">
+                   <padding>
+                       <Insets bottom="10" top="10" />
+                   </padding>
+                  <children>
+                      <CheckBox fx:id="haarClassifier" onAction="#haarSelected" text="Haar Classifier" />
+                      <CheckBox fx:id="lbpClassifier" onAction="#lbpSelected" text="LBP Classifier" />
+                  </children>
+               </HBox>
+               <Separator />
+           </children>
+        </VBox>
+    </top>
+    <center>
+        <VBox alignment="CENTER">
+            <padding>
+                <Insets left="10" right="10" />
+            </padding>
+           <children>
+               <ImageView fx:id="originalFrame" />
+           </children>
+        </VBox>
+    </center>
+    <bottom>
+        <HBox alignment="CENTER">
+            <padding>
+                <Insets bottom="25" left="25" right="25" top="25" />
+            </padding>
+           <children>
+               <Button fx:id="cameraButton" alignment="center" disable="true" onAction="#startCamera" text="Start camera" />
+            <VBox alignment="TOP_CENTER" prefHeight="50.0" prefWidth="500.0">
+               <HBox.margin>
+                  <Insets left="10.0" />
+               </HBox.margin>
+               <children>
+                  <Label text="Path for save image">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="pathField" />
+               </children>
+            </VBox>
+           </children>
+        </HBox>
+    </bottom>
+   <right>
+      <VBox prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <padding>
+            <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+         </padding>
+         <children>
+            <VBox prefHeight="62.0" prefWidth="150.0">
+               <children>
+                  <Label text="Initial Delay (sec)" />
+                  <TextField fx:id="initialDelay" maxWidth="-Infinity" prefHeight="25.0" prefWidth="40.0" text="5" />
+               </children>
+            </VBox>
+            <VBox prefHeight="62.0" prefWidth="150.0">
+               <children>
+                  <Label text="Crop Period (sec)" />
+                  <TextField fx:id="cropPeriod" maxWidth="-Infinity" prefHeight="25.0" prefWidth="40.0" text="2" />
+               </children>
+            </VBox>
+            <VBox prefHeight="62.0" prefWidth="150.0">
+               <children>
+                  <Label text="Initial Photo Count" />
+                  <TextField fx:id="photoCount" maxWidth="-Infinity" prefHeight="25.0" prefWidth="40.0" text="0" />
+               </children>
+            </VBox>
+         </children>
+      </VBox>
+   </right>
+</BorderPane>
