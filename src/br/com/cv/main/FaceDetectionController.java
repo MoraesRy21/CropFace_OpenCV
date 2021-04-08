@@ -1,4 +1,4 @@
-package it.polito.teaching.cv;
+package br.com.cv.main;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -14,16 +14,19 @@ import org.opencv.objdetect.CascadeClassifier;
 import org.opencv.objdetect.Objdetect;
 import org.opencv.videoio.VideoCapture;
 
-import it.polito.elite.teaching.cv.utils.Utils;
+import br.com.cv.utils.Utils;
 import java.io.File;
+import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.control.TextField;
 import javax.swing.JOptionPane;
+import org.opencv.core.Core;
 import org.opencv.imgcodecs.Imgcodecs;
 
 /**
@@ -58,6 +61,10 @@ public class FaceDetectionController {
     private TextField cropPeriod;
     @FXML
     private TextField photoCount;
+    @FXML
+    private Label labelCounter;
+    @FXML
+    private TextField fileName;
 
     private ScheduledExecutorService timer; // a timer for acquiring the video stream
     private ScheduledExecutorService timerToCrop;
@@ -72,6 +79,7 @@ public class FaceDetectionController {
     private int period;
     private String path = System.getProperty("user.dir");
     private String insertPath;
+    private String insertFileName;
     
     boolean possoVerificar = false;
     
@@ -177,6 +185,7 @@ public class FaceDetectionController {
 
                 // if the frame is not empty, process it
                 if (!frame.empty()) {
+                    Core.flip(frame, frame, 1);
                     // face detection
                     this.detectAndDisplay(frame);
                 }else
@@ -236,17 +245,24 @@ public class FaceDetectionController {
             System.out.println("faces not empty!");
             for (Rect faceRectangle : faces.toArray()) {
                 Mat faceImage = frame.submat(faceRectangle);
-                String fileName = insertPath+"\\Face_" + countPhoto + "-" + ".jpg";
+                String fileName = insertPath+"\\"+ insertFileName+ "_" + countPhoto + ".jpg";
                 Imgcodecs.imwrite(fileName, faceImage);
                 System.out.println("Tirei foto: Face_" + countPhoto);
                 countPhoto++;
+                Platform.runLater(alterLabebl);
             }
             setPossoVerificar(false);
         }
     }
     
+    Runnable alterLabebl = new Runnable(){
+        @Override
+        public void run() {
+            labelCounter.setText(""+countPhoto);
+        }
+    };
+    
     class ScheduleTask implements Runnable {
-
         @Override
         public void run() {
             setPossoVerificar(true);
@@ -271,6 +287,13 @@ public class FaceDetectionController {
         }
         insertPath = path;
         System.out.println(insertPath);
+        
+        String fileName = this.fileName.getText();
+        if(fileName == null || fileName.equals("")){
+            JOptionPane.showMessageDialog(null, "File name empty!");
+            return false;
+        }
+        insertFileName = fileName;
         
         String initD = initialDelay.getText(), cropP = cropPeriod.getText(), photoC = photoCount.getText();
         if((initD != null && !initD.equals("")) || (cropP != null && !cropP.equals("")) || (photoC != null && !photoC.equals(""))){
@@ -303,7 +326,6 @@ public class FaceDetectionController {
         if (this.lbpClassifier.isSelected()) {
             this.lbpClassifier.setSelected(false);
         }
-
         this.checkboxSelection("resources/haarcascades/haarcascade_frontalface_alt.xml");
     }
 
@@ -314,10 +336,9 @@ public class FaceDetectionController {
     @FXML
     protected void lbpSelected(Event event) {
         // check whether the haar checkbox is selected and deselect it
-        if (this.haarClassifier.isSelected()) {
+        if (this.haarClassifier.isSelected()){
             this.haarClassifier.setSelected(false);
         }
-
         this.checkboxSelection("resources/lbpcascades/lbpcascade_frontalface.xml");
     }
 
@@ -331,8 +352,11 @@ public class FaceDetectionController {
         // load the classifier(s)
         this.faceCascade.load(classifierPath);
 
-        // now the video capture can start
-        this.cameraButton.setDisable(false);
+        if (!this.haarClassifier.isSelected() && !this.lbpClassifier.isSelected()) {
+            this.cameraButton.setDisable(true);
+        } else { // now the video capture can start
+            this.cameraButton.setDisable(false);
+        }
     }
 
     /**

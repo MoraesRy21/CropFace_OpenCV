@@ -1,4 +1,4 @@
-package it.polito.elite.teaching.cv.utils;
+package br.com.cv.utils;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
